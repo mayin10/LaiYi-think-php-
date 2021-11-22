@@ -1,0 +1,63 @@
+<?php
+$client_id = 'AUOpawUd-zdbwjn3dEH2pNhxTYpDwCgysiAF02_DtmgsZNhTbk2NPnGWXQ1strKJdEXXlEc3QMCsqb8R';
+?>
+<script src="https://www.paypal.com/sdk/js?client-id=<?= $client_id ?>&currency=EUR"></script>
+
+<!-- Set up a container element for the button -->
+<button onclick="clickPayNow()">现在支付</button>
+
+<div id="paypal-button-container" style="width: 50px;"></div>
+
+
+<script>
+    var clickPayNow = function () {
+        paypal.Buttons({
+            style: {
+                layout: 'horizontal',
+                color:  'blue',
+                shape:  'rect',
+                label:  'paypal',
+                tagline: false
+            },
+
+            // Sets up the transaction when a payment button is clicked
+            createOrder: function(data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            order_id: 'x123456798x',
+                            currency_code: "EUR",
+                            value: '20.52' // Can reference variables or functions. Example: `value: document.getElementById('...').value`
+                        }
+                    }]
+                });
+            },
+
+            // Finalize the transaction after payer approval
+            onApprove: function(data, actions) {
+                console.log("data", data);
+
+                console.log('actions', actions);
+
+                return actions.order.capture().then(function(orderData) {
+                    // Successful capture! For dev/demo purposes:
+                    console.log(JSON.stringify(orderData));
+                    var transaction = orderData.purchase_units[0].payments.captures[0];
+                    console.log('Transaction '+ transaction.status + ': ' + transaction.id + '\n\nSee console for all available details');
+
+                    // When ready to go live, remove the alert and show a success message within this page. For example:
+                    // var element = document.getElementById('paypal-button-container');
+                    // element.innerHTML = '';
+                    // element.innerHTML = '<h3>Thank you for your payment!</h3>';
+                    // Or go to another URL:  actions.redirect('thank_you.html');
+                });
+            }
+        }).render('#paypal-button-container');
+    };
+
+</script>
+
+
+
+
+
